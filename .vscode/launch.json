@@ -1,0 +1,14 @@
+{
+     "version": "0.2.0",
+     "configurations": [
+         {
+             "name": "Launch file",
+             "type": "go",
+             "request": "launch",
+             "mode": "debug",
+             "env": {"FLASH_PORT": 9090},
+             "program": "${workspaceFolder}"
+         }
+    
+     ]
+ }
