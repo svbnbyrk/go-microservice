@@ -1,3 +1,19 @@
+// Package classification of Product API
+//
+// Documentation for Product API
+//
+//     Schemes: http
+//     BasePath: /
+//     Version: 1.0.0
+//
+//     Consumes:
+//     - application/json
+//
+//     Produces:
+//     - application/json
+//
+// swagger:meta
+
 package main
 
 import (
@@ -8,6 +24,8 @@ import (
 	"os/signal"
 	"syscall"
 	"time"
+
+	"github.com/go-openapi/runtime/middleware"
 	"github.com/gorilla/mux"
 	"github.com/sbvnbyrk/go-microservice/handlers"
 )
@@ -22,14 +40,22 @@ func main() {
 	getRouter := sm.Methods(http.MethodGet).Subrouter()
 	getRouter.HandleFunc("/", ph.GetProducts)
 
-	putRouter:= sm.Methods(http.MethodPut).Subrouter()
+	putRouter := sm.Methods(http.MethodPut).Subrouter()
 	putRouter.HandleFunc("/{id:[0-9]+}", ph.UpdateProducts)
 	putRouter.Use(ph.MiddlewareProductValidation)
 
-	postRouter:= sm.Methods(http.MethodPost).Subrouter()
+	postRouter := sm.Methods(http.MethodPost).Subrouter()
 	postRouter.HandleFunc("/", ph.AddProduct)
 	postRouter.Use(ph.MiddlewareProductValidation)
 
+	deleteRouter := sm.Methods(http.MethodDelete).Subrouter()
+	deleteRouter.HandleFunc("/{id:[0-9]+}", ph.DeleteProduct)
+
+	ops:= middleware.RedocOpts{SpecURL: "/swagger.json"}
+	sh:= middleware.Redoc(ops,nil)
+
+	getRouter.Handle("/docs", sh)
+	getRouter.Handle("/swagger.json", http.FileServer(http.Dir("./")))
 
 	s := &http.Server{
 		Addr:         ":9090",

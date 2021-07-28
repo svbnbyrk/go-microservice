@@ -5,54 +5,36 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"strconv"
-
-	"github.com/gorilla/mux"
 	"github.com/sbvnbyrk/go-microservice/data"
 )
 
+//A list of products return in the response
+//swagger:response productResponse
+type productResponse struct{
+	//All product at the system
+	//in:body
+	Body []data.Product
+}
+
+//swagger:response 	noContent
+type productNoContent struct{
+
+}
+//swagger:parameters deleteProduct
+type productIDParameterWrapper struct{
+	//the id of the product to delete from database
+	//in: path
+	//required: true
+	ID int `json:id`
+}
+
+//Products is a http handler
 type Products struct {
 	l *log.Logger
 }
 
 func NewProducts(l *log.Logger) *Products {
 	return &Products{l}
-}
-
-func (p *Products) GetProducts(rw http.ResponseWriter, r *http.Request) {
-	lp := data.GetProducts()
-	err := lp.ToJSON(rw)
-	if err != nil {
-		http.Error(rw, "unable json writer", http.StatusInternalServerError)
-	}
-}
-
-func (p *Products) AddProduct(rw http.ResponseWriter, r *http.Request) {
-	p.l.Println("Handle POST Request")
-	prod := r.Context().Value(KeyProduct{}).(*data.Product)
-	data.AddProduct(prod)
-}
-
-func (p Products) UpdateProducts(rw http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	id, err := strconv.Atoi(vars["id"])
-	if err != nil {
-		http.Error(rw, "Unable to convert id", http.StatusBadRequest)
-		return
-	}
-	p.l.Println("Handle PUT Product")
-	prod := r.Context().Value(KeyProduct{}).(*data.Product)
-
-	data.UpdateProduct(id, prod)
-	if err == data.ErrProductNotFound {
-		http.Error(rw, "product not found", http.StatusNotFound)
-		return
-	}
-
-	if err != nil {
-		http.Error(rw, "product not found", http.StatusNotFound)
-		return
-	}
 }
 
 type KeyProduct struct{}

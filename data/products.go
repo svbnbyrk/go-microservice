@@ -10,7 +10,10 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
+//swagger:model
 type Product struct {
+	//required:true
+	//min:1
 	ID          int     `json:"id"`
 	Name        string  `json:"name" validate:"required"`
 	Description string  `json:"description" `
@@ -25,7 +28,7 @@ type Products []*Product
 
 func (p *Product) Validate() error {
 	validate := validator.New()
-	validate.RegisterValidation("sku",validatSKU)
+	validate.RegisterValidation("sku", validatSKU)
 	return validate.Struct(p)
 }
 
@@ -42,6 +45,7 @@ func validatSKU(fl validator.FieldLevel) bool {
 	}
 	return true
 }
+
 func (p *Products) ToJSON(w io.Writer) error {
 	e := json.NewEncoder(w)
 	return e.Encode(p)
@@ -59,6 +63,15 @@ func GetProducts() Products {
 func AddProduct(p *Product) {
 	p.ID = getNextId()
 	productList = append(productList, p)
+}
+
+func DeleteProduct(id int) error {
+	i, err := findProduct(id)
+	if err != nil {
+		return err
+	}
+	productList = append(productList[:i], productList[i+1:]...)
+	return nil
 }
 
 func UpdateProduct(id int, p *Product) error {

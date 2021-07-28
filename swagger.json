@@ -1,0 +1,89 @@
+{
+  "swagger": "2.0",
+  "info": {},
+  "paths": {
+    "/products": {
+      "get": {
+        "description": "Returns a list of product",
+        "tags": [
+          "products"
+        ],
+        "operationId": "listProduct",
+        "responses": {
+          "200": {
+            "$ref": "#/responses/productResponse"
+          }
+        }
+      }
+    },
+    "/products/{id}": {
+      "delete": {
+        "description": "Returns noContent",
+        "tags": [
+          "products"
+        ],
+        "operationId": "deleteProduct",
+        "parameters": [
+          {
+            "type": "integer",
+            "format": "int64",
+            "description": "the id of the product to delete from database",
+            "name": "ID",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "201": {
+            "$ref": "#/responses/noContent"
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "Product": {
+      "type": "object",
+      "required": [
+        "id"
+      ],
+      "properties": {
+        "description": {
+          "type": "string",
+          "x-go-name": "Description"
+        },
+        "id": {
+          "type": "integer",
+          "format": "int64",
+          "minimum": 1,
+          "x-go-name": "ID"
+        },
+        "name": {
+          "type": "string",
+          "x-go-name": "Name"
+        },
+        "price": {
+          "type": "number",
+          "format": "float",
+          "x-go-name": "Price"
+        },
+        "sku": {
+          "type": "string",
+          "x-go-name": "SKU"
+        }
+      },
+      "x-go-package": "github.com/sbvnbyrk/go-microservice/data"
+    }
+  },
+  "responses": {
+    "productResponse": {
+      "description": "A list of products return in the response",
+      "schema": {
+        "type": "array",
+        "items": {
+          "$ref": "#/definitions/Product"
+        }
+      }
+    }
+  }
+}
